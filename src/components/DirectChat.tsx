@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import type { Message } from '../types';
-import { Send, Crown, Paperclip, Smile, Clock } from 'lucide-react';
+import { Send, Crown, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const DirectChat: React.FC = () => {
@@ -135,17 +135,9 @@ const DirectChat: React.FC = () => {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
-              className="w-full px-5 py-3 pr-28 bg-zinc-100 dark:bg-zinc-700 border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
+              className="w-full px-5 py-3 bg-zinc-100 dark:bg-zinc-700 border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow"
               disabled={sending}
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
-              <button type="button" className="p-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">
-                <Smile size={20} />
-              </button>
-              <button type="button" className="p-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">
-                <Paperclip size={20} />
-              </button>
-            </div>
           </div>
           <button
             type="submit"

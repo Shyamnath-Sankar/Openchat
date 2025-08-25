@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { MessageCircle, Pin, Settings, LogOut, Crown, Menu, X, ChevronLeft, Search, Bell, Users } from 'lucide-react';
+import { MessageCircle, Pin, Settings, LogOut, Crown, Menu, X, ChevronLeft } from 'lucide-react';
 import DirectChat from './DirectChat';
 import PinnedChat from './PinnedChat';
 import SettingsPage from './SettingsPage';
@@ -187,12 +187,6 @@ const ChatLayout: React.FC = () => {
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
               <span className="font-medium text-zinc-700 dark:text-zinc-300">{onlineUsers} Online</span>
             </div>
-            <button className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-              <Search size={20} className="text-zinc-500" />
-            </button>
-            <button className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-              <Bell size={20} className="text-zinc-500" />
-            </button>
           </div>
         </header>
         

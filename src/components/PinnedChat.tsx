@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import type { PinnedMessage } from '../types';
-import { Pin, Send, Edit2, Trash2, Crown, AlertCircle, Megaphone, Check, X } from 'lucide-react';
+import { Pin, Edit2, Trash2, Crown, AlertCircle, Megaphone, Check, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const PinnedChat: React.FC = () => {
