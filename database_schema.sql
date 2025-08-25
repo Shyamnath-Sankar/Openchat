@@ -172,7 +172,7 @@ GRANT SELECT ON messages_with_users TO anon, authenticated;
 -- Comments for documentation
 COMMENT ON TABLE users IS 'Stores user sessions and preferences';
 COMMENT ON TABLE messages IS 'Direct chat messages that expire after 24 hours';
-COMMENT ON TABLE pinned_messages IS 'Important messages pinned by moderators';
+COMMENT ON TABLE pinned_messages IS 'Permanent important messages pinned by moderators - never expire automatically';
 COMMENT ON FUNCTION delete_expired_messages() IS 'Removes messages older than 24 hours';
 COMMENT ON FUNCTION update_last_active() IS 'Updates user last_active timestamp when they send a message';
 COMMENT ON FUNCTION notify_message_change() IS 'Sends real-time notifications for message changes';

@@ -68,23 +68,41 @@ const PinnedChat: React.FC = () => {
     if (!newMessage.trim() || !user || !isOP || sending) return;
 
     setSending(true);
+    const content = newMessage.trim();
+    const tempId = `temp-${Date.now()}`;
+
+    const optimisticMessage: PinnedMessage = {
+      id: tempId,
+      user_id: user.id,
+      username: user.username,
+      content,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    setPinnedMessages(prev => [optimisticMessage, ...prev]);
+    setNewMessage('');
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('pinned_messages')
         .insert([
           {
             user_id: user.id,
             username: user.username,
-            content: newMessage.trim(),
+            content: content,
           },
-        ]);
+        ])
+        .select();
 
       if (error) throw error;
-      setNewMessage('');
+
+      setPinnedMessages(prev => prev.map(m => m.id === tempId ? data[0] : m));
+
     } catch (error) {
       console.error('Error adding pinned message:', error);
       alert('Failed to add pinned message. Please try again.');
+      setPinnedMessages(prev => prev.filter(m => m.id !== tempId));
     } finally {
       setSending(false);
     }
@@ -103,6 +121,11 @@ const PinnedChat: React.FC = () => {
   const saveEdit = async (messageId: string) => {
     if (!editingContent.trim()) return;
 
+    const originalContent = pinnedMessages.find(m => m.id === messageId)?.content;
+    setPinnedMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: editingContent.trim(), updated_at: new Date().toISOString() } : m));
+    setEditingId(null);
+    setEditingContent('');
+
     try {
       const { error } = await supabase
         .from('pinned_messages')
@@ -114,16 +137,18 @@ const PinnedChat: React.FC = () => {
 
       if (error) throw error;
       
-      setEditingId(null);
-      setEditingContent('');
     } catch (error) {
       console.error('Error updating pinned message:', error);
       alert('Failed to update message. Please try again.');
+      setPinnedMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: originalContent || m.content, updated_at: m.created_at } : m));
     }
   };
 
   const deletePinnedMessage = async (messageId: string) => {
     if (!confirm('Are you sure you want to delete this pinned message?')) return;
+
+    const originalMessages = [...pinnedMessages];
+    setPinnedMessages(prev => prev.filter(m => m.id !== messageId));
 
     try {
       const { error } = await supabase
@@ -135,6 +160,7 @@ const PinnedChat: React.FC = () => {
     } catch (error) {
       console.error('Error deleting pinned message:', error);
       alert('Failed to delete message. Please try again.');
+      setPinnedMessages(originalMessages);
     }
   };
 
@@ -160,7 +186,7 @@ const PinnedChat: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold text-amber-900 dark:text-amber-100">Pinned Messages</h2>
             <p className="text-amber-700 dark:text-amber-300">
-              Important announcements from moderators
+              Permanent announcements from moderators - never expire
             </p>
           </div>
         </div>
@@ -225,14 +251,10 @@ const PinnedChat: React.FC = () => {
                           value={editingContent}
                           onChange={(e) => setEditingContent(e.target.value)}
                           className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 resize-none"
-                          rows={4}
-                          maxLength={1000}
+                          rows={6}
                           placeholder="Enter your announcement..."
                         />
-                        <div className="flex items-center justify-between">
-                          <div className="text-xs text-amber-600 dark:text-amber-400">
-                            {editingContent.length}/1000 characters
-                          </div>
+                        <div className="flex items-center justify-end">
                           <div className="flex gap-2">
                             <button
                               onClick={() => saveEdit(message.id)}
@@ -301,17 +323,17 @@ const PinnedChat: React.FC = () => {
               <textarea
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Share an important message with all users..."
-                className="w-full px-4 py-4 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none transition-all duration-200 shadow-sm"
-                rows={4}
-                maxLength={1000}
+                placeholder="Share an important message with all users. As a pinned message, this will remain visible permanently until you choose to delete it."
+                className="w-full px-4 py-4 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-vertical transition-all duration-200 shadow-sm min-h-[120px]"
+                rows={6}
                 disabled={sending}
               />
             </div>
             
             <div className="flex items-center justify-between">
-              <div className="text-sm text-amber-600 dark:text-amber-400">
-                {newMessage.length}/1000 characters
+              <div className="text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
+                <Pin className="w-4 h-4" />
+                <span>Pinned messages are permanent and will not expire automatically</span>
               </div>
               <button
                 type="submit"
