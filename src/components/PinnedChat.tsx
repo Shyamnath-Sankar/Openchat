@@ -145,7 +145,7 @@ const PinnedChat: React.FC = () => {
   };
 
   const deletePinnedMessage = async (messageId: string) => {
-    if (!confirm('Are you sure you want to delete this pinned message?')) return;
+    if (!confirm('Are you sure you want to permanently delete this pinned message?\n\nThis action cannot be undone, and the message will be removed forever.')) return;
 
     const originalMessages = [...pinnedMessages];
     setPinnedMessages(prev => prev.filter(m => m.id !== messageId));
@@ -186,7 +186,7 @@ const PinnedChat: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold text-amber-900 dark:text-amber-100">Pinned Messages</h2>
             <p className="text-amber-700 dark:text-amber-300">
-              Permanent announcements from moderators - never expire
+              Permanent announcements from moderators - never auto-deleted
             </p>
           </div>
         </div>
@@ -201,10 +201,10 @@ const PinnedChat: React.FC = () => {
                 <Pin className="w-10 h-10 text-amber-500" />
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No pinned messages yet</h3>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">Important announcements will appear here</p>
+              <p className="text-slate-600 dark:text-slate-400 mb-4">Permanent announcements will appear here</p>
               {isOP && (
                 <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">
-                  📌 Add your first announcement below
+                  📌 Add your first permanent announcement below
                 </p>
               )}
             </div>
@@ -250,11 +250,13 @@ const PinnedChat: React.FC = () => {
                         <textarea
                           value={editingContent}
                           onChange={(e) => setEditingContent(e.target.value)}
-                          className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 resize-none"
-                          rows={6}
-                          placeholder="Enter your announcement..."
+                          className="w-full min-h-[120px] px-4 py-3 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 resize-y"
+                          placeholder="Enter your permanent announcement..."
                         />
-                        <div className="flex items-center justify-end">
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs text-amber-600 dark:text-amber-400">
+                            💾 This announcement will be permanent until manually deleted by OP
+                          </div>
                           <div className="flex gap-2">
                             <button
                               onClick={() => saveEdit(message.id)}
@@ -316,24 +318,31 @@ const PinnedChat: React.FC = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-full flex items-center justify-center">
                 <Pin className="w-4 h-4 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-100">Add Important Announcement</h3>
+              <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-100">Add Permanent Announcement</h3>
+            </div>
+            
+            <div className="mb-3 p-3 bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-200">
+                <Pin className="w-4 h-4" />
+                <span className="font-medium">Important:</span>
+                <span>Pinned messages are permanent and will never be automatically deleted. Only OP can remove them.</span>
+              </div>
             </div>
             
             <div className="relative">
               <textarea
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Share an important message with all users. As a pinned message, this will remain visible permanently until you choose to delete it."
-                className="w-full px-4 py-4 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-vertical transition-all duration-200 shadow-sm min-h-[120px]"
-                rows={6}
+                placeholder="Share a permanent announcement with all users...\n\nThis message will remain visible until manually deleted by a moderator."
+                className="w-full min-h-[120px] px-4 py-4 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-y transition-all duration-200 shadow-sm"
                 disabled={sending}
               />
             </div>
             
             <div className="flex items-center justify-between">
-              <div className="text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
+              <div className="text-sm text-amber-600 dark:text-amber-400 flex items-center gap-2">
                 <Pin className="w-4 h-4" />
-                <span>Pinned messages are permanent and will not expire automatically</span>
+                <span>📌 Permanent announcement - no character limit</span>
               </div>
               <button
                 type="submit"
