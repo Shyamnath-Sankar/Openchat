@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import LoginPage from './components/LoginPage';
 import ChatLayout from './components/ChatLayout';
+import { messageCleanupService } from './services/messageCleanup';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -54,6 +55,16 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  // Initialize message cleanup service
+  useEffect(() => {
+    messageCleanupService.start();
+    
+    // Cleanup on unmount
+    return () => {
+      messageCleanupService.stop();
+    };
+  }, []);
+
   return (
     <ThemeProvider>
       <Router>
