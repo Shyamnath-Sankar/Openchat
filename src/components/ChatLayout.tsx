@@ -43,6 +43,11 @@ const ChatLayout: React.FC = () => {
     };
   }, []);
 
+  const handleViewChange = (view: ChatView) => {
+    setActiveView(view);
+    setSidebarOpen(false);
+  };
+
   const handleLogout = () => {
     logout();
   };
@@ -62,21 +67,21 @@ const ChatLayout: React.FC = () => {
 
   return (
     <div className="h-screen flex bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300">
+      {/* Sidebar Overlay for Mobile - moved outside and given lower z-index */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/30 lg:hidden z-20" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
       {/* Modern Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-30 transition-all duration-300 ease-in-out ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } ${sidebarCollapsed ? 'w-20' : 'w-64'} lg:translate-x-0 lg:static lg:inset-0`}>
         
-        {/* Sidebar Overlay for Mobile */}
-        {sidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm lg:hidden z-20" 
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-        
         {/* Sidebar Content */}
-        <div className="relative flex flex-col h-full bg-white dark:bg-zinc-800 border-r border-zinc-200 dark:border-zinc-700">
+        <div className="relative h-full bg-white dark:bg-zinc-800 border-r border-zinc-200 dark:border-zinc-700">
           {/* Sidebar Header */}
           <div className={`flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-700 ${sidebarCollapsed ? 'px-2' : 'px-4'}`}>
             {!sidebarCollapsed && (
@@ -84,8 +89,10 @@ const ChatLayout: React.FC = () => {
                 <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center shadow-md">
                   <MessageCircle className="w-5 h-5 text-white" />
                 </div>
-                <h1 className="text-lg font-bold text-zinc-800 dark:text-white">OpenChat</h1>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">GenrecAI</p>
+                <div>
+                  <h1 className="text-lg font-bold text-zinc-800 dark:text-white">OpenChat</h1>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">GenrecAI</p>
+                </div>
               </div>
             )}
             
@@ -104,6 +111,14 @@ const ChatLayout: React.FC = () => {
                 sidebarCollapsed ? 'rotate-180' : ''
               }`} />
             </button>
+            
+            {/* Close Button - Mobile Only */}
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+            >
+              <X className="w-5 h-5 text-zinc-500" />
+            </button>
           </div>
           
           {/* Navigation Menu */}
@@ -113,21 +128,21 @@ const ChatLayout: React.FC = () => {
               text="Direct Chat"
               active={activeView === 'direct'}
               collapsed={sidebarCollapsed}
-              onClick={() => setActiveView('direct')}
+              onClick={() => handleViewChange('direct')}
             />
             <NavItem
               icon={<Pin size={20} />}
               text="Pinned Messages"
               active={activeView === 'pinned'}
               collapsed={sidebarCollapsed}
-              onClick={() => setActiveView('pinned')}
+              onClick={() => handleViewChange('pinned')}
             />
             <NavItem
               icon={<Settings size={20} />}
               text="Settings"
               active={activeView === 'settings'}
               collapsed={sidebarCollapsed}
-              onClick={() => setActiveView('settings')}
+              onClick={() => handleViewChange('settings')}
             />
           </nav>
           
@@ -148,7 +163,10 @@ const ChatLayout: React.FC = () => {
                     <p className="text-sm font-semibold text-zinc-800 dark:text-white truncate">
                       {user?.username}
                     </p>
-                    <button onClick={handleLogout} className="p-1.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-white rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                    <button 
+                      onClick={handleLogout} 
+                      className="p-1.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-white rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                    >
                       <LogOut size={16} />
                     </button>
                   </div>
@@ -172,9 +190,9 @@ const ChatLayout: React.FC = () => {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 bg-zinc-100 dark:bg-zinc-700 rounded-md"
+              className="lg:hidden p-2 bg-zinc-100 dark:bg-zinc-700 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
             >
-              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              <Menu size={20} />
             </button>
             <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
               {activeView === 'direct' && 'Direct Chat'}
@@ -185,7 +203,7 @@ const ChatLayout: React.FC = () => {
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">{onlineUsers} Online</span>
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{onlineUsers} Online</span>
             </div>
           </div>
         </header>
